@@ -1,0 +1,42 @@
+{% extends "BE_table/header.html" %}
+{% block content %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}  
+
+<style>
+    th, td{
+        font-size:15px;
+    }
+        #container{
+        width: 30%;
+        padding: 10px 10px 10px 50px;
+        background-color: #F4A460;
+        box-shadow: 10px 10px 5px 0px #999999;
+        border-radius: 10px;
+        }
+    h1{
+        margin-left:200px;
+    }
+</style>
+
+
+{% if user.username == record.username_field %}
+    <div class="container" id="container">
+        
+            <h5>Insert updated record</h5>
+            <form method='post' action="{% url 'BE_table:insert' %}">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+
+        
+    </div>
+
+{% else %}
+    <h1> You only can modified the fields that you created. </h1>
+
+{% endif %}
+
+
+{% endblock %}

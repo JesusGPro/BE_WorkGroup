@@ -1,0 +1,35 @@
+{% extends "BE_table/header.html" %}
+{% block content %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}  
+<style>
+    h3{
+        margin-left:190px;
+    }
+    #container{
+        width: 40%;
+        padding: 10px 10px 10px 50px;
+        background-color: #F4A460;
+        box-shadow: 10px 10px 5px 0px #999999;
+        border-radius: 10px;
+        }
+</style>
+<h3>Insert new blast' data</h3>
+<div class="container">
+<p>You can modify only the fields you insert.</p>
+<p>Double check your user name is correct</p>
+
+<div class="container" id="container">
+    <div class="pageholder">
+        
+        <div class="linkholder">
+            <form method='post' action="{% url 'BE_table:insert' %}">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-primary" value="Submit">
+            </form>
+
+    </div>
+</div>
+
+{% endblock %}
