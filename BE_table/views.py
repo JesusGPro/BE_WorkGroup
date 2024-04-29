@@ -6,10 +6,9 @@ from .forms import FollowupBEForm
 from django.contrib import messages
 from datetime import date
 from django.contrib.auth.decorators import login_required
-from openpyxl import Workbook
 import sqlite3
-import os
 from datetime import datetime
+from django.http import HttpResponse
 
 def homepage(request):
     today = date.today()
@@ -41,7 +40,7 @@ def logout_request(request):
     return redirect('BE_table:homepage')
 
 def insert(request):
-    form = FollowupBEForm(request.POST)  
+    form = FollowupBEForm(request.POST)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
@@ -49,7 +48,7 @@ def insert(request):
     # else:
     #     form = FollowupBE()
     return render(request, 'BE_table/insert.html', {'form': form})
-    
+
 
 def report(request):
     # Get all gym joiners and their additional details
@@ -70,6 +69,7 @@ def edit(request, record_id):
         form = FollowupBEForm(instance=record)
     return render(request, 'BE_table/edit.html', {'form': form, 'record_key': record_id, 'record': record})
 
+"""
 @login_required
 def export_to_excel(request):
     table_name = 'BE_table_followupbe'
@@ -95,13 +95,18 @@ def export_to_excel(request):
             ws.append(row)
 
         # Get user's Downloads folder path
-        downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
+        downloads_folder = os.path.join(os.path.expanduser('~'))
+
 
         # Create a filename with timestamp
         filename = f"{table_name}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
 
         # Save the workbook to Downloads folder
-        wb.save(os.path.join(downloads_folder, filename))
+        #wb.save(os.path.join(downloads_folder, filename))
+        with open(os.path.join(downloads_folder, filename), "wb") as f:
+            f.write(filename.encode('utf-8'))
+
+        download_file(request)
 
         messages.success(request, "Data exported successfully to Excel!")
         return redirect('BE_table:homepage')
@@ -112,3 +117,70 @@ def export_to_excel(request):
 
     finally:
         connection.close()
+
+
+def download_file(request):
+    file_path = f'https://www.pythonanywhere.com/user/JesusGPtto/files/home/JesusGPtto/{filename}'
+    response = FileResponse(open(file_path, 'rb'))
+    response['Content-Disposition'] = 'attachment; filename=f"{filename}"'
+    return response
+
+"""
+@login_required
+def export_to_excel(request):
+    import pandas as pd
+    table_name = 'BE_table_followupbe'
+    connection = sqlite3.connect("db.sqlite3")
+    data_frame = pd.read_sql(f'SELECT * FROM {table_name}', connection)
+
+    try:
+        # Generate data as CSV
+        csv_data = data_frame.to_csv(index=False)
+
+        # Create a downloadable CSV response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename={table_name}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv'
+        response.write(csv_data.encode('utf-8'))
+
+        # Success message can be displayed on the template
+        messages.success(request, "Data exported successfully! You can download the CSV file.")
+        return response
+
+    except Exception as e:
+        messages.error(request, f"Error exporting data to CSV: {e}")
+        return render(request, 'BE_table/home.html')
+
+    finally:
+        connection.close()
+
+"""
+@login_required
+def export_to_excel(request):
+    import pandas as pd
+    table_name = 'BE_table_followupbe'
+    connection = sqlite3.connect("db.sqlite3")
+    data_frame = pd.read_sql(f'SELECT * FROM {table_name}', connection)
+
+    try:
+        # Encode the DataFrame and assign it to a new variable
+        excel_file = io.BytesIO()
+        writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+        data_frame.to_excel(writer, index=False, sheet_name='be_records')
+
+        # Create a downloadable Excel response
+        response = HttpResponse(excel_file.getvalue(), content_type='Spreadsheet files')
+        response['Content-Disposition'] = f'attachment; filename={table_name}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.xlsx'
+
+        # Success message can be displayed on the template
+        messages.success(request, "Data exported successfully!")
+        writer.save()  # Closing the ExcelWriter object
+        excel_file.seek(0)  # Resetting the BytesIO object's cursor to the beginning
+        return response
+
+    except Exception as e:
+        messages.error(request, f"Error exporting data to excel: {e}")
+        return render(request, 'BE_table/home.html')
+
+    finally:
+        connection.close()
+"""

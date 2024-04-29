@@ -1,7 +1,6 @@
 {% extends "BE_table/header.html" %}
 {% block content %}
-{% load crispy_forms_filters %}
-{% load crispy_forms_tags %}  
+
 <style>
     h3{
         margin-left:190px;
@@ -12,23 +11,52 @@
         background-color: #F4A460;
         box-shadow: 10px 10px 5px 0px #999999;
         border-radius: 10px;
+        font-size: 15px;        
         }
+    
+    label{
+        font-weight: bold;
+        font-size: 20px;
+        padding-right: 20px;
+
+    }
+    label:hover{
+        font-size: 30px;
+        color: blue;
+    }
+    input, select{
+        background-color: white;
+        border-color: green;
+        border-width: 2px;
+        border-radius: 5px;
+        box-shadow: 5px 3px 4px rgba(0, 0, 0, 0.2);
+    }
+    textarea{
+        width: 90%;
+        background-color: white;
+        border-color: green;
+        border-width: 2px;
+        border-radius: 5px;
+        box-shadow: 5px 3px 4px rgba(0, 0, 0, 0.2);
+    }
+
 </style>
 <h3>Insert new blast' data</h3>
 <div class="container">
 <p>You can modify only the fields you insert.</p>
 <p>Double check your user name is correct</p>
+<p>Date format: day/month/year, example: 04/29/2024, for April 29 2024</p>
 
 <div class="container" id="container">
     <div class="pageholder">
         
-        <div class="linkholder">
-            <form method='post' action="{% url 'BE_table:insert' %}">
+        <div class="mb-3">
+            <form method='post' action="{% url 'BE_table:insert' %}" >
             {% csrf_token %}
-            {{ form|crispy }}
+            {{ form.as_p}}
             <input type="submit" class="btn btn-primary" value="Submit">
             </form>
-
+        </div>
     </div>
 </div>
 
