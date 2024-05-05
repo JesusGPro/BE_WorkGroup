@@ -39,6 +39,7 @@
                 <th>Contour holes kg</th>
                 <th>Incident and Observations</th>
                 <th>Total quantity</th>
+                <th>kg/m3</th>
                 <th>User</th>
             </tr>
         </thead>
@@ -60,6 +61,15 @@
                     <td>{{record.contour_holes_kg}}</td>
                     <td>{{record.incident_time_lost}}</td>
                     <td>{{record.total_quantity}}</td>
+                    <td>  
+                    <script>
+                        if("{{record.tunnel_location}}"=="ADIT 3N"||"{{record.tunnel_location}}"=="ADIT 3"){
+                            document.write(({{record.total_quantity}} / ({{record.holes_length}}*119.44)).toFixed(2));
+                        }else{
+                            document.write(({{record.total_quantity}} / ({{record.holes_length}}*169.33)).toFixed(2));
+                        }
+                    </script>
+                    </td>
                     <td>{{record.username_field}}</td>
 
                 </tr>

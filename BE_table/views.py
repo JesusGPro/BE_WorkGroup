@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 import sqlite3
 from datetime import datetime
 from django.http import HttpResponse
+import sqlite3
 
 def homepage(request):
     today = date.today()
@@ -51,9 +52,8 @@ def insert(request):
 
 
 def report(request):
-    # Get all gym joiners and their additional details
-    records = FollowupBE.objects.all()
-    # select_related is to perform a SQL join between two tables in a single query
+    records = FollowupBE.objects.all().values()
+
     return render(request, 'BE_table/report.html', {'records': records})
 
 @login_required
@@ -95,32 +95,5 @@ def export_to_excel(request):
     finally:
         connection.close()
 
-"""
-def edit(request, record_id):
-    record = FollowupBE.objects.get(id=record_id)
-    
-    record.advance = 666
-    record.save()
-        # form = FollowupBEForm(request.POST, instance=record)
-        #if form.is_valid():
-            #form.save()
-    #return redirect('BE_table:report')
-    # else:
-    #     form = FollowupBEForm(instance=record)
-    return render(request, 'BE_table/edit.html', {'record_key': record_id, 'record': record})
 
-"""
-"""
-@login_required
-def edit(request, record_id):
-    record = FollowupBE.objects.get(id=record_id)
-    form = FollowupBEForm(request.POST, instance=record)
-    if form.is_valid():
-        form = FollowupBEForm(request.POST, instance=record)
-        form.save()
-        return redirect('BE_table:report')
-    else:
-        form = FollowupBEForm(instance=record)
-    return render(request, 'BE_table/edit.html', {'form': form, 'record_key': record_id, 'record': record})
-"""
 
